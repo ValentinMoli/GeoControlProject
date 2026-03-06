@@ -24,3 +24,7 @@ dist/
 # OS
 Thumbs.db
 .DS_Store
+
+#map tiles
+*.mbtiles
+geo-control-services/map-service/data/*.mbtiles
