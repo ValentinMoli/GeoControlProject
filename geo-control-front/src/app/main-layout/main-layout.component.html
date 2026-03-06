@@ -1,0 +1,60 @@
+<nav class="topbar">
+  <div class="container">
+    <!-- ================= DESKTOP ================= -->
+    @if (!isTablet) {
+      <div class="desktop">
+        <div class="left">
+          <img [src]="logoUrl" alt="GeoControl" class="logo" />
+          @for (item of navItems; track item) {
+            <a [routerLink]="item.path" routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }" class="nav-btn">
+              <mat-icon class="material-symbols nav-icon">{{ item.icon }}</mat-icon>
+              <span>{{ item.name }}</span>
+            </a>
+          }
+        </div>
+        <div class="right">
+          <button mat-icon-button class="avatar-btn" (click)="goToProfile()">
+            <div class="avatar-fallback">
+              <mat-icon class="material-symbols">person</mat-icon>
+            </div>
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- ================= TABLET / MOBILE ================= -->
+    @if (isTablet) {
+      <div class="mobile">
+        <img [src]="currentLogoUrl" alt="GeoControl" class="logo" />
+        <div class="right">
+          <div class="avatar-btn" (click)="goToProfile()">
+            <div class="avatar-fallback small">
+              <mat-icon class="material-symbols">person</mat-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</nav>
+
+<!-- ===== CONTENIDO PRINCIPAL ===== -->
+<main class="content">
+  <router-outlet></router-outlet>
+</main>
+
+<!-- ===== NAV INFERIOR (solo mobile ≤580px) ===== -->
+@if (isMobile) {
+  <nav class="bottom-nav">
+    <div class="bottom-wrap">
+      @for (item of navItems; track item) {
+        <a [routerLink]="item.path" routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }" class="bottom-item">
+          <mat-icon class="bottom-icon material-symbols">{{ item.icon }}</mat-icon>
+          <span class="bottom-label">{{ item.name }}</span>
+        </a>
+      }
+    </div>
+  </nav>
+}

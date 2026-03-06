@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  # Base de Datos Principal (GeoControlDB)
+  db:
+    build:
+      context: ./geo-control-db
+      dockerfile: Dockerfile
+    container_name: mssql-db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=GeoControl!
+    ports:
+      - "1434:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+
+  # Base de Datos de Autenticación 2FA (GeoControlAuthDB)
+  db-auth:
+    build:
+      context: ./geo-control-db-auth
+      dockerfile: Dockerfile
+    container_name: mssql-db-auth
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=GeoControl!
+    ports:
+      - "1435:1433"
+    volumes:
+      - sqldata-auth:/var/opt/mssql
+
+  # Backend Web API (.NET)
+  api:
+    build:
+      context: ./geo-control-web-api
+      dockerfile: Dockerfile
+    container_name: dotnet-api
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:80
+      - AllowedHosts=*
+      - TwoFactor__BaseUrl=http://2fa-service:8081
+    ports:
+      - "7214:80"
+
+  # Frontend Angular (nginx)
+  frontend:
+    build:
+      context: ./geo-control-front
+      dockerfile: Dockerfile
+    container_name: angular-frontend
+    depends_on:
+      - api
+      - map-service
+      - 2fa-service
+    ports:
+      - "4200:80"
+
+  # Microservicio Mapas (Go)
+  map-service:
+    build:
+      context: ./geo-control-services/map-service
+      dockerfile: Dockerfile
+    container_name: go-map-service
+    volumes:
+      - ./geo-control-services/map-service/data:/root/data
+    ports:
+      - "8082:8082"
+
+  # Microservicio 2FA (Go)
+  2fa-service:
+    build:
+      context: ./geo-control-services/2fa-service
+      dockerfile: Dockerfile
+    container_name: go-2fa-service
+    depends_on:
+      - db-auth
+    environment:
+      - AUTH_DB_CONN=sqlserver://sa:GeoControl!@db-auth:1433?database=GeoControlAuthDB&TrustServerCertificate=true
+    ports:
+      - "8081:8081"
+    restart: on-failure
+
+volumes:
+  sqldata:
+  sqldata-auth:

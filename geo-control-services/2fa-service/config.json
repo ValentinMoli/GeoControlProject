@@ -1,0 +1,8 @@
+{
+    "smtp_host": "smtp.gmail.com",
+    "smtp_port": "587",
+    "smtp_user": "geocontrol25@gmail.com",
+    "smtp_pass": "oylmnpvvshwvsisy",
+    "smtp_from": "geocontrol25@gmail.com",
+    "auth_db_conn": "server=localhost;instance=SQLEXPRESS;database=GeoControlAuthDB;trusted_connection=yes;TrustServerCertificate=true;"
+}

@@ -1,0 +1,108 @@
+<div class="dialog-header">
+  <h2 mat-dialog-title>{{ isEditMode ? 'Editar Usuario' : 'Agregar Usuario' }}</h2>
+  <button class="close-btn" mat-dialog-close>
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+  <mat-dialog-content>
+    <div class="form-container">
+      <!-- Full Name -->
+      <div class="field-group">
+        <label class="field-label">Nombre Completo</label>
+        <div class="field-wrapper">
+          <span class="field-icon left">
+            <mat-icon>badge</mat-icon>
+          </span>
+          <input class="input-field" formControlName="fullName" placeholder="John Doe">
+          @if (userForm.get('fullName')?.hasError('required') && userForm.get('fullName')?.touched) {
+            <div class="field-error"
+              >
+              Requerido
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="field-group">
+        <label class="field-label">Email</label>
+        <div class="field-wrapper">
+          <span class="field-icon left">
+            <mat-icon>email</mat-icon>
+          </span>
+          <input class="input-field" formControlName="email" type="email" placeholder="john@example.com">
+          @if (userForm.get('email')?.hasError('email') && userForm.get('email')?.touched) {
+            <div class="field-error"
+              >
+              Email inválido
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Role -->
+      <div class="field-group">
+        <label class="field-label">Rol</label>
+        <div class="field-wrapper">
+          <span class="field-icon left">
+            <mat-icon>admin_panel_settings</mat-icon>
+          </span>
+          <select class="input-field select-field" formControlName="role">
+            <option [ngValue]="2">Operario</option>
+            <option [ngValue]="1">Administrador</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Profession -->
+      <div class="field-group">
+        <label class="field-label">Profesión</label>
+        <div class="field-wrapper">
+          <span class="field-icon left">
+            <mat-icon>work</mat-icon>
+          </span>
+          <select class="input-field select-field" formControlName="professionId">
+            <option [ngValue]="null">Sin profesión</option>
+            @for (prof of professions(); track prof) {
+              <option [ngValue]="prof.id">
+                {{ prof.name }}
+              </option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Password (Only in Create Mode) -->
+      @if (!isEditMode) {
+        <div class="field-group">
+          <label class="field-label">Contraseña</label>
+          <div class="field-wrapper">
+            <span class="field-icon left">
+              <mat-icon>lock</mat-icon>
+            </span>
+            <input class="input-field" formControlName="password" type="password" placeholder="Contraseña">
+            @if (userForm.get('password')?.hasError('required') && userForm.get('password')?.touched) {
+              <div class="field-error"
+                >
+                Requerido
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions style="padding: 0;">
+    <div class="button-container">
+      <button type="button" class="button-secondary" mat-dialog-close>
+        Cancelar
+      </button>
+      <button type="submit" class="button-primary" [disabled]="userForm.invalid">
+        {{ isEditMode ? 'Guardar Cambios' : 'Crear Usuario' }}
+      </button>
+    </div>
+  </mat-dialog-actions>
+</form>

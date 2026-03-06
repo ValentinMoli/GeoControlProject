@@ -1,0 +1,12 @@
+<div class="map-wrapper">
+  <div id="map" class="map-container"></div>
+  @if (isLocating()) {
+    <div class="loading-overlay">
+      <div class="loading-content">
+        <img src="assets/isologo.png" alt="GeoControl Logo" class="loading-logo">
+        <div class="spinner"></div>
+        <p class="loading-text">Obteniendo ubicación...</p>
+      </div>
+    </div>
+  }
+</div>

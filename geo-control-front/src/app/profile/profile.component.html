@@ -1,0 +1,169 @@
+<div class="profile-container">
+  <mat-card class="profile-card">
+    <mat-card-header>
+      <div mat-card-avatar class="profile-avatar">
+        <mat-icon>person</mat-icon>
+      </div>
+      <mat-card-title>Perfil de Usuario</mat-card-title>
+      <mat-card-subtitle>Información de la cuenta</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (currentUser(); as user) {
+        <div class="info-row">
+          <span class="label">Nombre:</span>
+          <span class="value">{{ user.fullName }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Email:</span>
+          <span class="value">{{ user.email }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Profesión:</span>
+          <span class="value">{{ user.professionName || 'Sin profesión' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Rol:</span>
+          <span class="value">{{ user.role === 1 ? 'Administrador' : 'Usuario' }}</span>
+        </div>
+      }
+
+      @if (!currentUser()) {
+        @if (profileError()) {
+          <div class="loading-placeholder" style="color: #d32f2f;">
+            {{ profileError() }}
+          </div>
+        }
+        @if (!profileError()) {
+          <div class="loading-placeholder">
+            Cargando perfil...
+          </div>
+        }
+      }
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-flat-button color="warn" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Cerrar Sesión
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  @if (authService.isAdmin()) {
+    <div class="users-section">
+      <div class="section-header">
+        <h3>Gestión de Usuarios</h3>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="button-secondary" (click)="openProfessionsDialog()"
+            style="width: auto; padding: 0.5rem 1rem; gap: 0.5rem; display: flex; align-items: center; border-radius: 0.75rem; border: 1.5px solid #E2E8F0; background: transparent; color: #1F2937; font-weight: 600; font-size: 0.85rem; cursor: pointer;">
+            <mat-icon>work</mat-icon>
+            <span class="btn-text">Profesiones</span>
+          </button>
+          <button class="button-primary" (click)="openAddUserDialog()"
+            style="width: auto; padding: 0.5rem 1rem; gap: 0.5rem;">
+            <mat-icon>person_add</mat-icon>
+            <span class="btn-text">Agregar Usuario</span>
+          </button>
+        </div>
+      </div>
+      <table mat-table [dataSource]="users()" class="mat-elevation-z8 desktop-user-table">
+        <!-- ID Column Removed -->
+        <!-- Username Column Removed/Replaced? The prompt said "improve table having work info and remove ID column".
+        It also said "que diga nombre, apellido, email, profesion, rol".
+        I'll remove username if implicit in email/fullname, or keep it.
+        Prompt: "tabla de usaurios teniendo tambien la info de trabajo y quita la columna id"
+        I'll just remove ID as requested and add Profession.
+        -->
+        <ng-container matColumnDef="fullName">
+          <th mat-header-cell *matHeaderCellDef> Nombre Completo </th>
+          <td mat-cell *matCellDef="let user"> {{user.fullName}} </td>
+        </ng-container>
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef> Email </th>
+          <td mat-cell *matCellDef="let user"> {{user.email || '-'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="professionName">
+          <th mat-header-cell *matHeaderCellDef> Profesión </th>
+          <td mat-cell *matCellDef="let user"> {{user.professionName || '-'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef> Rol </th>
+          <td mat-cell *matCellDef="let user"> {{user.role === 1 ? 'Admin' : 'Usuario'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> Estado </th>
+          <td mat-cell *matCellDef="let user">
+            <span [class.active-badge]="user.isActive" [class.inactive-badge]="!user.isActive">
+              {{user.isActive ? 'Activo' : 'Inactivo'}}
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Acciones </th>
+          <td mat-cell *matCellDef="let user">
+            <button mat-icon-button color="primary" (click)="editUser(user)" matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <!-- Solo permitir borrar si no es el mismo usuario logueado o regla de negocio -->
+            @if (user.isActive) {
+              <button mat-icon-button color="warn" (click)="deleteUser(user)"
+                matTooltip="Eliminar">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+            @if (!user.isActive) {
+              <button mat-icon-button color="primary" (click)="reactivateUser(user)"
+                matTooltip="Reactivar">
+                <mat-icon>person_add</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <!-- Mobile User List -->
+      <div class="mobile-user-list">
+        @for (user of users(); track user) {
+          <div class="user-card">
+            <div class="user-card-header">
+              <div class="user-info-main">
+                <span class="user-name">{{user.fullName}}</span>
+                <span class="user-role">{{user.role === 1 ? 'Admin' : 'Usuario'}}</span>
+              </div>
+              <span [class.active-badge]="user.isActive" [class.inactive-badge]="!user.isActive">
+                {{user.isActive ? 'Activo' : 'Inactivo'}}
+              </span>
+            </div>
+            <div class="user-card-body">
+              <div class="info-item">
+                <mat-icon>email</mat-icon>
+                <span class="info-text">{{user.email || '-'}}</span>
+              </div>
+              <div class="info-item">
+                <mat-icon>work</mat-icon>
+                <span class="info-text">{{user.professionName || '-'}}</span>
+              </div>
+            </div>
+            <div class="user-card-actions">
+              <button mat-button color="primary" (click)="editUser(user)">
+                <mat-icon>edit</mat-icon> Editar
+              </button>
+              @if (user.isActive) {
+                <button mat-button color="warn" (click)="deleteUser(user)">
+                  <mat-icon>delete</mat-icon> Eliminar
+                </button>
+              }
+              @if (!user.isActive) {
+                <button mat-button color="primary" (click)="reactivateUser(user)">
+                  <mat-icon>person_add</mat-icon> Reactivar
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

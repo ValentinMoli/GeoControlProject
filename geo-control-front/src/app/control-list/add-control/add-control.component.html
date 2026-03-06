@@ -1,0 +1,190 @@
+<div class="dialog-header">
+  <h2 mat-dialog-title>{{ isEditMode ? 'Editar Control' : 'Agregar Control' }}</h2>
+  <button class="close-btn" (click)="onCancel()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+@if (isLoadingUsers()) {
+  <div class="loading-wrapper">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Cargando usuarios...</p>
+  </div>
+} @else {
+  <form [formGroup]="controlForm" (ngSubmit)="onSubmit()">
+    <mat-dialog-content>
+      <div class="form-container">
+        <!-- Título -->
+        <div class="field-group">
+          <label class="field-label">Título *</label>
+          <div class="field-wrapper">
+            <span class="field-icon left">
+              <mat-icon>title</mat-icon>
+            </span>
+            <input class="input-field" type="text" formControlName="title"
+              placeholder="Título del control" />
+              @if (controlForm.get('title')?.hasError('required') && controlForm.get('title')?.touched) {
+                <div class="field-error"
+                  >
+                  El título es requerido
+                </div>
+              }
+            </div>
+          </div>
+          <!-- Descripción -->
+          <div class="field-group">
+            <label class="field-label">Descripción</label>
+            <div class="field-wrapper">
+              <span class="field-icon left textarea-icon">
+                <mat-icon>description</mat-icon>
+              </span>
+              <textarea class="input-field textarea-field" formControlName="description" rows="3"
+              placeholder="Descripción del control"></textarea>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Dirección / Ubicación (Argentina)</label>
+            <div class="field-wrapper">
+              <span class="field-icon left">
+                <mat-icon>search</mat-icon>
+              </span>
+              <input class="input-field" type="text" formControlName="address"
+                placeholder="Ej. Av. Colón 1234, Tandil" [matAutocomplete]="auto" />
+                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"
+                  (optionSelected)="onOptionSelected($event)">
+                  @for (result of filteredAddresses | async; track result) {
+                    <mat-option [value]="result">
+                      <span style="font-size: 0.85rem; line-height: 1.2;">
+                        {{ formatAddress(result) }}
+                      </span>
+                    </mat-option>
+                  }
+                </mat-autocomplete>
+                @if (isSearching) {
+                  <div class="field-icon right">
+                    <mat-spinner diameter="18"></mat-spinner>
+                  </div>
+                }
+              </div>
+            </div>
+            <!-- Coordenadas (Ocultas o eliminadas visualmente, ya que se llenan con la dirección) -->
+            <!--
+            <div class="coordinates-row">
+              ...
+            </div>
+            -->
+            <!-- Fecha de Vencimiento y Hora -->
+            <div class="field-group">
+              <label class="field-label">Fecha y Hora de Vencimiento *</label>
+              <div class="row" style="display: flex; gap: 1rem;">
+                <div class="field-wrapper" style="flex: 1;">
+                  <span class="field-icon left">
+                    <mat-icon>event</mat-icon>
+                  </span>
+                  <input class="input-field" [matDatepicker]="picker" formControlName="expiresAt"
+                    [min]="minDate" placeholder="dd/mm/aaaa" (input)="onDateInput($event)" />
+                    <button type="button" class="field-icon right" (click)="picker.open()">
+                      <mat-icon>calendar_today</mat-icon>
+                    </button>
+                    <mat-datepicker #picker></mat-datepicker>
+                    @if (controlForm.get('expiresAt')?.hasError('required') && controlForm.get('expiresAt')?.touched) {
+                      <div class="field-error"
+                        >
+                        Requerido
+                      </div>
+                    }
+                    @if (controlForm.hasError('pastDateTime') && (controlForm.get('expiresAt')?.touched || controlForm.get('expiresTime')?.touched)) {
+                      <div class="field-error"
+                        >
+                        La fecha y hora deben ser futuras
+                      </div>
+                    }
+                  </div>
+                  <div class="field-wrapper" style="flex: 0 0 120px;">
+                    <span class="field-icon left">
+                      <mat-icon>schedule</mat-icon>
+                    </span>
+                    <input class="input-field" type="time" formControlName="expiresTime" />
+                    @if (controlForm.get('expiresTime')?.hasError('required') && controlForm.get('expiresTime')?.touched) {
+                      <div class="field-error"
+                        >
+                        Requerido
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+              <!-- Profesión Requerida -->
+              <div class="field-group">
+                <label class="field-label">Profesión Requerida *</label>
+                <div class="field-wrapper">
+                  <span class="field-icon left">
+                    <mat-icon>work</mat-icon>
+                  </span>
+                  <select class="input-field select-field" formControlName="professionId">
+                    <option value="" disabled>Seleccionar profesión</option>
+                    @for (prof of professions(); track prof) {
+                      <option [value]="prof.id">
+                        {{ prof.name }}
+                      </option>
+                    }
+                  </select>
+                  @if (controlForm.get('professionId')?.hasError('required') && controlForm.get('professionId')?.touched) {
+                    <div class="field-error"
+                      >
+                      Debe seleccionar una profesión
+                    </div>
+                  }
+                </div>
+              </div>
+              <!-- Usuario Asignado -->
+              <div class="field-group">
+                <label class="field-label">Usuario Asignado *</label>
+                <div class="field-wrapper">
+                  <span class="field-icon left">
+                    <mat-icon>person</mat-icon>
+                  </span>
+                  <select class="input-field select-field" formControlName="assignedUserId">
+                    <option value="" disabled>
+                      {{ controlForm.get('professionId')?.value ? 'Seleccionar usuario' : 'Seleccione
+                      profesión primero' }}
+                    </option>
+                    @for (user of filteredUsers(); track user) {
+                      <option [value]="user.id">
+                        {{ user.fullName }}
+                      </option>
+                    }
+                  </select>
+                  @if (controlForm.get('assignedUserId')?.hasError('required') && controlForm.get('assignedUserId')?.touched) {
+                    <div class="field-error"
+                      >
+                      Debe seleccionar un usuario
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </mat-dialog-content>
+          <mat-dialog-actions>
+            <div class="button-container" style="display: flex; justify-content: space-between; width: 100%;">
+              <div class="left-actions">
+                @if (isEditMode) {
+                  <button type="button" mat-flat-button color="warn" (click)="onDelete()"
+                    [disabled]="isSubmitting">
+                    Eliminar
+                  </button>
+                }
+              </div>
+              <div class="right-actions" style="display: flex; gap: 0.5rem;">
+                <button type="button" class="button-secondary" (click)="onCancel()">
+                  Cancelar
+                </button>
+                <button type="submit" class="button-primary" [disabled]="controlForm.invalid || isSubmitting">
+                  {{ isSubmitting ? 'Guardando...' : 'Guardar' }}
+                </button>
+              </div>
+            </div>
+          </mat-dialog-actions>
+        </form>
+      }
+

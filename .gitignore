@@ -1,0 +1,26 @@
+# IDE
+.vs/
+.vscode/
+*.suo
+*.user
+
+# .NET
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+
+# Node
+node_modules/
+dist/
+
+# Go
+*.exe
+
+# Logs
+*.log
+
+# OS
+Thumbs.db
+.DS_Store

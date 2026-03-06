@@ -1,0 +1,56 @@
+<div class="twofa-page">
+  <main class="twofa-main">
+    <div class="twofa-card">
+      <div class="twofa-header">
+        <!-- Si querés, podés poner también el logo acá -->
+        <!--
+        <img
+          src="assets/logo.png"
+          alt="Logo GeoControl"
+          class="logo-img"
+          />
+        -->
+        <h1 class="twofa-title">Verificación en 2 pasos</h1>
+        <p class="twofa-subtitle">
+          {{ infoMessage }}
+        </p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="twofa-form">
+        <!-- Campo CÓDIGO -->
+        <div class="form-field">
+          <label for="code" class="field-label">Código</label>
+
+          <div class="field-wrapper">
+            <input id="code" class="input-field" type="text" formControlName="code" inputmode="numeric" maxlength="8"
+              autocomplete="one-time-code" />
+
+            <!-- Error flotante, no mueve nada -->
+            @if (codeCtrl?.invalid && (codeCtrl?.touched || codeCtrl?.dirty)) {
+              <div class="field-error">
+                Ingresá el código recibido.
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Error general -->
+        @if (errorMessage) {
+          <div class="global-error">
+            {{ errorMessage }}
+          </div>
+        }
+
+        <!-- Botón principal -->
+        <button type="submit" class="button-primary twofa-button" [disabled]="loading || form.invalid">
+          {{ loading ? 'Verificando...' : 'Confirmar código' }}
+        </button>
+
+        <!-- Botón tipo enlace -->
+        <button type="button" class="link-btn" (click)="onBackToLogin()">
+          Volver al inicio de sesión
+        </button>
+      </form>
+    </div>
+  </main>
+</div>

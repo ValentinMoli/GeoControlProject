@@ -1,0 +1,289 @@
+.controls-container {
+  padding: 16px;
+  background: #f5f5f5;
+  min-height: 100%;
+  font-family: 'Roboto', sans-serif;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .add-btn {
+      color: #0B80C8;
+    }
+
+    .help-btn {
+      color: #6b7280;
+    }
+  }
+}
+
+.controls-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.control-item {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 16px;
+  padding: 12px 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    transform: translateY(-5px);
+  }
+
+  // Sin realizar, vencida antes de ese dia: fondo rojo
+  &.expired-before {
+    background: #f00000;
+  }
+
+  // Realizado (tanto a tiempo como vencido): fondo verde
+  &.completed,
+  &.completed-expired {
+    background: #00b050; // was #92d050
+  }
+}
+
+.date-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 16px;
+
+  // Default - Pendiente no vencida: azul
+  background: #0B80C8;
+  color: #fff;
+
+  .time {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .date {
+    font-size: 0.75rem;
+    opacity: 0.9;
+  }
+
+  // Sin realizar, vence hoy: naranja/amarillo
+  &.expired-today {
+    background: #FFA500;
+  }
+
+  // Sin realizar, vencida antes de hoy: rojo
+  &.expired-before {
+    background: #c00000;
+  }
+
+  // Realizado a tiempo: verde
+  &.completed {
+    background: #196F3D; // Lighter Pine Green (was #145A32)
+  }
+
+  // Realizado vencido: rojo
+  &.completed-expired {
+    background: #c00000;
+  }
+}
+
+.control-info {
+  flex: 1;
+  min-width: 0;
+
+  .title-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 4px;
+
+    .title {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .address {
+      display: flex;
+      align-items: center;
+      font-size: 0.85rem;
+      color: #6b7280;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        margin-right: 2px;
+        vertical-align: middle;
+      }
+    }
+  }
+
+  .subtitle {
+    margin: 0 0 4px 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    .separator {
+      color: #9ca3af;
+    }
+  }
+
+  .description {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+    word-break: break-word;
+    /* Ensure long words wrap */
+  }
+
+  // Texto blanco en fondos oscuros (rojo y verde)
+  .expired-before &,
+  .completed &,
+  .completed-expired & {
+
+    .title,
+    .description,
+    .assigned-user,
+    .address,
+    .subtitle,
+    .subtitle .profession,
+    .subtitle .separator,
+    .subtitle .user,
+    .address mat-icon {
+      color: #fff;
+    }
+  }
+}
+
+.arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: 12px;
+
+  mat-icon {
+    color: #6b7280;
+    font-size: 1.5rem;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.empty-message {
+  text-align: center;
+  color: #6b7280;
+  padding: 40px 20px;
+  font-size: 1rem;
+}
+
+// Help dialog styles
+.help-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+
+  &.expired-before-bg {
+    background: #f00000;
+    color: #fff;
+
+    p {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  &.completed-bg {
+    background: #00b050; // was #92d050
+    color: #fff;
+
+    p {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+}
+
+.help-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 12px;
+  flex-shrink: 0;
+
+  &.pending {
+    background: #0B80C8;
+  }
+
+  &.expired-today {
+    background: #FFA500;
+  }
+
+  &.expired-before,
+  &.completed-expired {
+    background: #c00000;
+  }
+
+  &.completed {
+    background: #196F3D; // Lighter Pine Green (was #145A32)
+  }
+}
+
+.help-text {
+  strong {
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+}
+
+@media (max-width: 768px) {
+  .controls-container {
+    padding-bottom: 80px;
+  }
+}

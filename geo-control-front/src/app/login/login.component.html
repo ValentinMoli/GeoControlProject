@@ -1,0 +1,70 @@
+<div class="login-page">
+  <!-- Contenido principal -->
+  <main class="login-main">
+    <div class="login-card">
+      <div class="login-header">
+        <!-- Logo por IMG en vez de SCSS mask -->
+        <img src="assets/logo.png" alt="Logo GeoControl" class="logo-img" />
+        <p>Ingresa tus credenciales para continuar</p>
+      </div>
+
+      <!-- REACTIVE FORM -->
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
+        <!-- Email -->
+        <div class="select-login">
+          <div class="field-wrapper">
+            <span class="field-icon left">
+              <mat-icon>email</mat-icon>
+            </span>
+            <input class="input-field" type="email" placeholder="correo electrónico" formControlName="email"
+              autocomplete="email" />
+
+            <!-- Error DENTRO del wrapper -->
+            @if (emailCtrl?.invalid && (emailCtrl?.touched || emailCtrl?.dirty)) {
+              <div class="field-error">
+                El correo es obligatorio y debe ser válido.
+              </div>
+            }
+          </div>
+
+        </div>
+
+        <!-- Contraseña -->
+        <div class="select-login">
+          <div class="field-wrapper">
+            <span class="field-icon left">
+              <mat-icon>lock</mat-icon>
+            </span>
+            <input class="input-field" [type]="showPassword ? 'text' : 'password'" placeholder="contraseña"
+              formControlName="password" autocomplete="current-password" />
+            <button type="button" class="field-icon right toggle-password" (click)="togglePassword()">
+              <mat-icon>
+                {{ showPassword ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
+            </button>
+
+            <!-- Error DENTRO del wrapper -->
+            @if (passwordCtrl?.invalid && (passwordCtrl?.touched || passwordCtrl?.dirty)) {
+              <div class="field-error">
+                La contraseña es obligatoria.
+              </div>
+            }
+          </div>
+
+        </div>
+
+        <!-- Error general de login -->
+        @if (errorMessage) {
+          <div class="global-error">
+            {{ errorMessage }}
+          </div>
+        }
+
+        <!-- Botón LOGIN -->
+        <button type="submit" class="button-primary login-button" [disabled]="loading || form.invalid">
+          {{ loading ? 'Ingresando...' : 'LOGIN' }}
+        </button>
+      </form>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,95 @@
+<div class="controls-container">
+  <div class="header">
+    <h2>Trabajos</h2>
+    <div class="header-actions">
+      @if (authService.isAdmin()) {
+        <button mat-icon-button class="add-btn" (click)="openAddControlDialog()"
+          title="Agregar Trabajo">
+          <mat-icon>add</mat-icon>
+        </button>
+      }
+      <button mat-icon-button class="help-btn" (click)="openHelpDialog()">
+        <mat-icon>help_outline</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="controls-list">
+    @if (controls().length > 0) {
+      @for (control of controls(); track control) {
+        <div class="control-item" [ngClass]="getStatusClass(control)"
+          (click)="onControlClick(control)">
+          <div class="date-circle" [ngClass]="getCircleClass(control)">
+            <span class="time">{{ control.expiresAt | date:'HH:mm' }}</span>
+            <span class="date">{{ control.expiresAt | date:'dd/MM' }}</span>
+          </div>
+          <div class="control-info">
+            <div class="title-row">
+              <h3 class="title">{{ control.title }}</h3>
+              @if (control.address) {
+                <span class="address">
+                  <mat-icon inline="true">place</mat-icon> {{ control.address }}
+                </span>
+              }
+            </div>
+            <p class="subtitle">
+              <span class="profession">{{ control.profession?.name || 'General' }}</span>
+              <span class="separator">-</span>
+              <span class="user">{{ control.assignedUserName || 'Sin asignar' }}</span>
+            </p>
+            <p class="description">{{ control.description || 'Sin descripción' }}</p>
+          </div>
+          <div class="arrow">
+            <mat-icon>chevron_right</mat-icon>
+          </div>
+        </div>
+      }
+    } @else {
+      <p class="empty-message">No hay controles disponibles.</p>
+    }
+  </div>
+</div>
+
+<ng-template #helpDialog>
+  <h2 mat-dialog-title>Estados de los Trabajos</h2>
+  <mat-dialog-content>
+    <div class="help-item">
+      <div class="help-circle pending"></div>
+      <div class="help-text">
+        <strong>Pendiente</strong>
+        <p>Control sin realizar, aún no venció.</p>
+      </div>
+    </div>
+    <div class="help-item">
+      <div class="help-circle expired-today"></div>
+      <div class="help-text">
+        <strong>Vence hoy</strong>
+        <p>Control sin realizar, vence hoy.</p>
+      </div>
+    </div>
+    <div class="help-item expired-before-bg">
+      <div class="help-circle expired-before"></div>
+      <div class="help-text">
+        <strong>Vencido</strong>
+        <p>Control sin realizar, ya pasó la fecha.</p>
+      </div>
+    </div>
+    <div class="help-item completed-bg">
+      <div class="help-circle completed"></div>
+      <div class="help-text">
+        <strong>Completado a tiempo</strong>
+        <p>Control realizado antes del vencimiento.</p>
+      </div>
+    </div>
+    <div class="help-item completed-bg">
+      <div class="help-circle completed-expired"></div>
+      <div class="help-text">
+        <strong>Completado fuera de tiempo</strong>
+        <p>Control realizado después del vencimiento.</p>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cerrar</button>
+  </mat-dialog-actions>
+</ng-template>
