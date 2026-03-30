@@ -7,7 +7,7 @@ namespace GeoControl.Api.Controllers
 {
   [ApiController]
   [Route("api/[controller]")]
-  [Authorize(Roles = "1")]
+  [Authorize]
   public class UsersController : ControllerBase
   {
     private readonly GeoControlDbContext _context;
@@ -61,6 +61,7 @@ namespace GeoControl.Api.Controllers
     };
 
     // GET: api/users
+    [Authorize(Roles = "1")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
     {
@@ -119,6 +120,7 @@ namespace GeoControl.Api.Controllers
     }
 
     // POST: api/users
+    [Authorize(Roles = "1")]
     [HttpPost]
     public async Task<ActionResult<UserDto>> CreateUser([FromBody] CreateUserRequest request)
     {
@@ -151,6 +153,7 @@ namespace GeoControl.Api.Controllers
     }
 
     // PUT: api/users/5
+    [Authorize(Roles = "1")]
     [HttpPut("{id:int}")]
     public async Task<ActionResult<UserDto>> UpdateUser(int id, [FromBody] UpdateUserRequest request)
     {
@@ -181,6 +184,7 @@ namespace GeoControl.Api.Controllers
     }
 
     // DELETE: api/users/5  (BAJA LÓGICA)
+    [Authorize(Roles = "1")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteUser(int id)
     {
@@ -195,6 +199,7 @@ namespace GeoControl.Api.Controllers
     }
 
     // PUT: api/users/5/reactivate (ALTA LÓGICA)
+    [Authorize(Roles = "1")]
     [HttpPut("{id:int}/reactivate")]
     public async Task<IActionResult> ReactivateUser(int id)
     {

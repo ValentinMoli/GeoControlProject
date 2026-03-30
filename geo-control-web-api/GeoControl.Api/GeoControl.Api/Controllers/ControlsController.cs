@@ -51,7 +51,7 @@ namespace GeoControl.Api.Controllers
         Address = dto.Address,
         ProfessionId = dto.ProfessionId,
         Status = "Pending",
-        CreatedAt = DateTime.UtcNow,
+        CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("America/Buenos_Aires")),
         ExpiresAt = dto.ExpiresAt,
         AssignedUserId = dto.AssignedUserId
       };

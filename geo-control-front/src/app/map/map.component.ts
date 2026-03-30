@@ -6,6 +6,7 @@ import { Profession } from '../../types/profession.type';
 import { ControlsService } from '../services/controls.service';
 import { ProfessionsService } from '../services/professions.service';
 import { AuthService } from '../services/auth.service';
+import { environment } from '../../environments/environment';
 
 @Component({
     selector: 'app-map',
@@ -38,7 +39,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     // 2) Creamos el mapa centrado en Tandil
     this.map = new maplibregl.Map({
       container: 'map',
-      style: 'http://localhost:8082/style.json',
+      style: `${environment.mapServerUrl}/style.json`,
       center: [-59.1332, -37.3217], // [lng, lat] Tandil
       zoom: 12,
       maxZoom: 18,
@@ -79,9 +80,18 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       console.log('✅ MapLibre: mapa cargado');
       // Asegurar tamaño correcto al cargar
       this.map?.resize();
-      
+
       // 5) Activamos automáticamente la geolocalización al cargar
       geolocate.trigger();
+
+      // Timeout de seguridad: si la geolocalización no responde en 5s, quitar overlay
+      setTimeout(() => {
+        if (this.isLocating()) {
+          console.warn('⚠️ Timeout de geolocalización, quitando overlay');
+          this.isLocating.set(false);
+          this.map?.resize();
+        }
+      }, 5000);
 
       // 6) Cargamos y mostramos los controles
       this.loadControls();
@@ -193,7 +203,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       },
       error: (err: any) => {
         console.error('❌ Error cargando controles:', err);
-        alert('Error al cargar los controles. Asegúrese de que la API Backend (.NET) esté corriendo en el puerto 7214.');
+        alert('Error al cargar los controles. Asegúrese de que la API Backend (.NET) esté corriendo.');
       }
     });
   }

@@ -15,7 +15,7 @@
           <span class="field-icon left">
             <mat-icon>badge</mat-icon>
           </span>
-          <input class="input-field" formControlName="fullName" placeholder="John Doe">
+          <input class="input-field" formControlName="fullName" placeholder="Juan Pérez">
           @if (userForm.get('fullName')?.hasError('required') && userForm.get('fullName')?.touched) {
             <div class="field-error"
               >
@@ -32,7 +32,7 @@
           <span class="field-icon left">
             <mat-icon>email</mat-icon>
           </span>
-          <input class="input-field" formControlName="email" type="email" placeholder="john@example.com">
+          <input class="input-field" formControlName="email" type="email" placeholder="juan@ejemplo.com">
           @if (userForm.get('email')?.hasError('email') && userForm.get('email')?.touched) {
             <div class="field-error"
               >

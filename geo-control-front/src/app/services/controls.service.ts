@@ -3,12 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Control, CreateControlRequest } from '../../types/control.type';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ControlsService {
-  private apiUrl = 'http://localhost:7214/api/controls'; // .NET API
+  private apiUrl = `${environment.apiUrl}/controls`;
   private controlChangedSource = new Subject<void>();
   controlChanged$ = this.controlChangedSource.asObservable();
 

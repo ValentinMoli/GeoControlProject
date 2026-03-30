@@ -34,7 +34,7 @@ func main() {
 
 	// Configuración de CORS para permitir peticiones desde el frontend (Angular)
 	r.Use(func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		if c.Request.Method == http.MethodOptions {
@@ -61,6 +61,10 @@ func main() {
 
 // serveStyle genera y devuelve el JSON de estilo para Maplibre
 func serveStyle(c *gin.Context) {
+	scheme := "http"
+	if proto := c.GetHeader("X-Forwarded-Proto"); proto != "" {
+		scheme = proto
+	}
 	host := c.Request.Host
 
 	style := fmt.Sprintf(`{
@@ -70,7 +74,7 @@ func serveStyle(c *gin.Context) {
     "openmaptiles": {
       "type": "vector",
       "tiles": [
-        "http://%s/tiles/{z}/{x}/{y}.pbf"
+        "%s://%s/tiles/{z}/{x}/{y}.pbf"
       ],
       "minzoom": 0,
       "maxzoom": 14
@@ -140,7 +144,7 @@ func serveStyle(c *gin.Context) {
       }
     }
   ]
-}`, host)
+}`, scheme, host)
 
 	c.Header("Content-Type", "application/json")
 	c.String(http.StatusOK, style)
@@ -171,7 +175,7 @@ func serveTile(c *gin.Context) {
 		return
 	}
 
-	tmsY := flipY(z, y)
+	tmsY := (1 << z) - 1 - y
 
 	query := `
         SELECT tile_data
@@ -205,7 +209,3 @@ func serveTile(c *gin.Context) {
 	}
 }
 
-// flipY convierte coordenadas entre esquema XYZ y TMS
-func flipY(z, y int) int {
-	return (1 << z) - 1 - y
-}

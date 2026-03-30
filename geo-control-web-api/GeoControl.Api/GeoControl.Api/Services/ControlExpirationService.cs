@@ -43,7 +43,8 @@ namespace GeoControl.Api.Services
             using var scope = _serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<GeoControlDbContext>();
             
-            var now = DateTime.UtcNow;
+            var argentinaZone = TimeZoneInfo.FindSystemTimeZoneById("America/Buenos_Aires");
+            var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, argentinaZone);
 
             // Buscar controles Pendientes que ya hayan superado su fecha de vencimiento
             var expiredControls = await context.Controls

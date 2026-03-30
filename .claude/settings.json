@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker-compose up -d --build)",
+      "Bash(where ngrok)",
+      "Read(//c/Users/HP VICTUS/**)",
+      "Bash(DOCKER_HOST=npipe:////./pipe/docker_engine docker-compose down)",
+      "Bash(DOCKER_HOST=npipe:////./pipe/docker_engine docker volume ls --filter name=geocontrol)",
+      "Bash(DOCKER_HOST=npipe:////./pipe/docker_engine docker exec mssql-db bash -c '/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"\"$MSSQL_SA_PASSWORD\"\" -d master -Q \"\"SELECT name FROM sys.databases\"\" -C')",
+      "Bash(DOCKER_HOST=npipe:////./pipe/docker_engine docker exec mssql-db bash -c '/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"\"$MSSQL_SA_PASSWORD\"\" -d GeoControlDB -Q \"\"SELECT Email, FullName FROM Users\"\" -C')"
+    ]
+  }
+}
